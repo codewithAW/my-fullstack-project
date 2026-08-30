@@ -1,0 +1,94 @@
+import React, { createContext, useState, useEffect } from 'react';
+import api from '../services/api';
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await api.get('/auth/me');
+          setUser(res.data.user);
+        } catch (error) {
+          console.error('Error fetching user', error);
+          localStorage.removeItem('token');
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
+
+  const login = async (email, password) => {
+    const res = await api.post('/auth/login', { email, password });
+    if (!res.data.requiresVerification) {
+      localStorage.setItem('token', res.data.token);
+      setUser(res.data.user);
+    }
+    return res.data;
+  };
+
+  const signup = async (name, email, password) => {
+    const res = await api.post('/auth/signup', { name, email, password });
+    if (!res.data.requiresVerification && res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      setUser(res.data.user);
+    }
+    return res.data;
+  };
+
+  const verifyEmail = async (email, code) => {
+    const res = await api.post('/auth/verify-email', { email, code });
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      setUser(res.data.user);
+    }
+    return res.data;
+  };
+
+  const resendVerification = async (email) => {
+    const res = await api.post('/auth/resend-verification', { email });
+    return res.data;
+  };
+
+  const changePassword = async (oldPassword, newPassword) => {
+    const res = await api.post('/auth/change-password', { oldPassword, newPassword });
+    // Update user state to reflect mustChangePassword is now false
+    setUser(prev => ({ ...prev, mustChangePassword: false }));
+    return res.data;
+  };
+
+  const googleLogin = async (credential, action) => {
+    const res = await api.post('/auth/google', { credential, action });
+    localStorage.setItem('token', res.data.token);
+    setUser(res.data.user);
+    return res.data;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      login,
+      signup,
+      verifyEmail,
+      resendVerification,
+      changePassword,
+      googleLogin,
+      logout
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
