@@ -1,0 +1,167 @@
+/* Admin Dashboard Specific Cinematic Styles */
+
+.admin-dashboard-container {
+  /* Match Landing.css issues-section background loosely */
+  background: linear-gradient(to bottom, #000 0%, #080808 30%, #0a0a0a 100%);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 120px);
+}
+
+.dashboard-content-z {
+  position: relative;
+  z-index: 1;
+}
+
+/* Premium Cinematic Tabs */
+.premium-tabs-container {
+  display: flex;
+  gap: 15px;
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  margin: 0 auto 40px auto;
+  max-width: fit-content;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.premium-tab {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 12px 30px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.premium-tab:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.05);
+}
+
+.premium-tab.active {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.premium-tab-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+/* KPI Grid matches Officer Dashboard */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.kpi-step-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glass);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.kpi-step-card:hover {
+  transform: translateY(-5px);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-glass-hover);
+}
+.kpi-step-number {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 10px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.kpi-step-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #888;
+  font-weight: 600;
+}
+.kpi-critical .kpi-step-number {
+  color: #ef4444;
+}
+
+/* Horizontal List Cards (Replacing Table) */
+.admin-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-list-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 20px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  transition: var(--transition-smooth);
+}
+
+.admin-list-card:hover {
+  transform: translateY(-2px);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-glass-hover);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* Utilities for cards */
+.text-success { color: #34d399 !important; }
+.text-warning { color: #f59e0b !important; }
+.text-critical { color: #ef4444 !important; }
+
+/* Modal specific overlay for deep cinema feel */
+.cinematic-overlay {
+  background: rgba(0,0,0,0.85) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+@media (max-width: 1024px) {
+  .admin-list-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .admin-dashboard-container {
+    padding: 20px;
+  }
+  .premium-tabs-container {
+    flex-direction: column;
+    border-radius: 12px;
+  }
+  .premium-tab {
+    border-radius: 8px;
+    justify-content: center;
+  }
+}
