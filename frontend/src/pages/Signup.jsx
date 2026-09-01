@@ -31,14 +31,11 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const res = await signup(name, email, password);
-      if (res.requiresVerification) {
-        navigate('/verify-email', { state: { email: email } });
-      } else {
-        setSuccess('Account created successfully. Please log in.');
-        setTimeout(() => {
-          navigate('/login', { state: location.state });
-        }, 1500);
-      }
+      setSuccess('Account created successfully.');
+      setTimeout(() => {
+        const destination = location.state?.from || '/dashboard';
+        navigate(destination, { state: location.state });
+      }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to create account.');
       setIsLoading(false);

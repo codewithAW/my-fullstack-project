@@ -32,18 +32,14 @@ const Login = () => {
       const emailValue = email.trim();
       const res = await login(emailValue, password);
       
-      if (res.requiresVerification) {
-        navigate('/verify-email', { state: { email: emailValue } });
-      } else {
-        setTimeout(() => {
-          if (res.user.role === 'admin') navigate('/admin');
-          else if (res.user.role === 'officer' && res.user.mustChangePassword) navigate('/change-password');
-          else {
-            const destination = location.state?.from || '/dashboard';
-            navigate(destination, { state: location.state });
-          }
-        }, 300);
-      }
+      setTimeout(() => {
+        if (res.user.role === 'admin') navigate('/admin');
+        else if (res.user.role === 'officer' && res.user.mustChangePassword) navigate('/change-password');
+        else {
+          const destination = location.state?.from || '/dashboard';
+          navigate(destination, { state: location.state });
+        }
+      }, 300);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to sign in. Please check your credentials.');
       setIsLoading(false);

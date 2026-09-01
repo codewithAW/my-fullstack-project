@@ -33,57 +33,30 @@ const signup = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (user) {
-      if (user.isEmailVerified) {
-        return res.status(400).json({ success: false, message: 'An account with this email already exists. Please log in.' });
-      } else {
-        // Unverified user tries to signup again. Update password and resend code.
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-        user.name = name;
-        
-        const code = generateVerificationCode();
-        user.verificationCode = code;
-        user.verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-        await user.save();
-        
-        const emailSent = await sendVerificationEmail(user.email, code);
-        if (!emailSent) {
-          return res.status(500).json({ success: false, message: "We couldn't send the verification email. Please try again." });
-        }
-        
-        return res.status(200).json({
-          success: true,
-          requiresVerification: true,
-          message: 'Verification email sent'
-        });
-      }
+      return res.status(400).json({ success: false, message: 'An account with this email already exists. Please log in.' });
     }
 
     // New user
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const code = generateVerificationCode();
-
     user = await User.create({
       name,
       email,
       password: hashedPassword,
       role: safeRole,
-      isEmailVerified: false,
-      verificationCode: code,
-      verificationCodeExpires: new Date(Date.now() + 10 * 60 * 1000)
+      isEmailVerified: true
     });
 
     if (user) {
-      const emailSent = await sendVerificationEmail(user.email, code);
-      if (!emailSent) {
-        return res.status(500).json({ success: false, message: "We couldn't send the verification email. Please try again." });
-      }
-      
       res.status(201).json({
         success: true,
-        requiresVerification: true,
-        message: 'Verification email sent'
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token: generateToken(user._id)
       });
     } else {
       res.status(400).json({ success: false, message: 'Invalid user data' });
@@ -116,21 +89,7 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Email verification check for citizens
-    if (user.role === 'citizen' && !user.isEmailVerified) {
-      const code = generateVerificationCode();
-      user.verificationCode = code;
-      user.verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
-      await user.save();
-      
-      await sendVerificationEmail(user.email, code);
-      
-      return res.status(200).json({
-        success: true,
-        requiresVerification: true,
-        message: 'Please verify your email before continuing.'
-      });
-    }
+    // Email verification removed
 
     res.status(200).json({
       success: true,
